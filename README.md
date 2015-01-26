@@ -12,7 +12,9 @@ Clone this project.
 
 Open Terminal and go to the directory memory-cljs.
 
-```lein cljsbuild auto memory-cljs
+```
+lein cljsbuild auto memory-cljs
+```
 
 Open index.html with a browser.
 
