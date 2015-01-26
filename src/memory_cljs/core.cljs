@@ -62,8 +62,9 @@
                               (assoc % :found true)
                            %)
                      cards))
-                  cards))
+              cards))
       cards))
+
 
 (defn handle-doubles
    "find two turned cards and hide them"
@@ -89,12 +90,13 @@
 
 (defn toggle-card [app card]
   "persist the toggle"
-  (om/transact! app :cards
+  (if (true? (:hidden card))
+      (om/transact! app :cards
                (fn[cards]
                    (-> cards
                        handle-doubles
                       (toggle card)
-                       eliminate-equals))))
+                       eliminate-equals)))))
 
 (defn card-view
   "om component for cell"
@@ -104,7 +106,8 @@
     (render-state [this {:keys [turnaround]}]
            (if (false? (:found card))
               (dom/div #js {:className "open-card"
-                            :onClick #(put! turnaround @card)}
+                            :onClick #(put! turnaround @card)
+                            :onTouchEnd #(put! turnaround @card)}
                    (dom/span #js {:className "label" }
                        (cond (false? (:hidden card))
                              (:label card))))
@@ -131,6 +134,7 @@
      (render-state [this {:keys [turnaround]}]
         (dom/div #js {:className "board"}
            (dom/h2 nil "Memory Board")
+           (dom/p nil "Vind de kaarten met gelijke woorden")
            (apply dom/div #js {:className "board"}
                (om/build-all card-view (:cards app)
                  {:init-state {:turnaround turnaround}}))))))
