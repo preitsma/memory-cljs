@@ -1,6 +1,5 @@
 (ns memory-cljs.core
-  (:require com.facebook.React
-            [om.core :as om :include-macros true]
+  (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.core.async :refer [put! chan <!]])
   (:require-macros [cljs.core.async.macros :refer [go go-loop]]))
@@ -29,8 +28,14 @@
   (atom
     {:cards
       (into []
-      (create-all-cards labels))}))
+      (create-all-cards labels))}
+    {:turns "0"}))
 
+(defn add-turn
+   "add a turn"
+   [app]
+   (om/transact! app :turns inc)
+   (.log js/console "aap"))
 
 (defn log-card
    "log one card"
@@ -70,8 +75,7 @@
    "find two turned cards and hide them"
    [cards]
    (let [amount (amount-turned cards)]
-      (if
-         (= amount 2)
+      (if (= amount 2)
            (vec
               (map
                  #(assoc % :hidden true)
@@ -90,13 +94,15 @@
 
 (defn toggle-card [app card]
   "persist the toggle"
-  (if (true? (:hidden card))
-      (om/transact! app :cards
-               (fn[cards]
+  (when  (:hidden card)
+       (om/transact! app :cards
+                 (fn[cards]
                    (-> cards
                        handle-doubles
                       (toggle card)
-                       eliminate-equals)))))
+                       eliminate-equals)))
+       (om/transact! app :turns inc)))
+  (.log js/console (:turns @board))
 
 (defn card-view
   "om component for cell"
@@ -115,6 +121,13 @@
                    (dom/span #js {:className "label" }
                         "gevonden"))))))
 
+(defn test []
+   (print "aaa")
+   (print "aaa"))
+
+(test)
+
+(/ 0 2)
 
 (defn memory-board
   "om component for board"
@@ -134,7 +147,9 @@
      (render-state [this {:keys [turnaround]}]
         (dom/div #js {:className "board"}
            (dom/h2 nil "Memory Board")
-           (dom/p nil "Vind de kaarten met gelijke woorden")
+           (dom/p nil "Vind de kaarten met gelijke woorden.")
+           (dom/p nil (str "aantal beurten: "
+                           (quot (:turns @board) 2)))
            (apply dom/div #js {:className "board"}
                (om/build-all card-view (:cards app)
                  {:init-state {:turnaround turnaround}}))))))
