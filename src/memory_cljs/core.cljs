@@ -122,6 +122,7 @@
                           "gevonden")))))))
 
 
+
 (defn memory-board
   "om component for board"
   [app owner]
