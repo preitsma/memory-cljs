@@ -18,6 +18,16 @@ lein cljsbuild auto memory-cljs
 
 Open index.html with a browser.
 
+## Backlog
+
+* ~~Aantal beurten tellen~~
+* Layout verbeteren, met afstandjes tussen de kaarten
+* Aantal gevonden paren tellen
+* Memory bord kunnen resetten
+* Aantal kaarten kunnen instellen
+* Achtergrond plaatje tevoorschijn laten komen bij gevonden kaarten
+* Zelf plaatjes kunnen instellen (vanuit Instagram)
+
 ## License
 
 Copyright © 2015 [Plance](http://www.plance.nl)
