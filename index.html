@@ -1,47 +1,31 @@
 <html>
-    <body>
-     	<style>
-            body {
-                font-family: arial;
-            }
-            div.board {
-                width: 400px;
-                height: 600px;
-            }
+    <head>
+        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">
+        <link rel="stylesheet" href="style/memory.css">
 
-            div.open-card {
-                width: 100px;
-                height: 100px;
-                outline: 1px solid;
-                float: left;
-                text-align: center;
-                display:table;
-            }
-            div.closed-card {
-                width: 100px;
-                height: 100px;
-                outline: 1px solid;
-                float: left;
-                text-align: center;
-                display:table;
-                background-color: black;
-            }
-            span.label {
-                display:table-cell;
-                vertical-align:middle;
-            }
-        </style>
-        <div id="memory"></div>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <div class="content">
+           <div class="memory">
+               <h2>Memory Board</h2>
+               <p>Vind kaarten met gelijke woorden</p>
+               <div id="memory"></div>
+           </div>
+           <div class="footer">
+               <p>
+                   Code op Github <a href="https://github.com/preitsma/memory-cljs">https://github.com/preitsma/memory-cljs</a>
+               </p>
+               <p>
+                   Copyright @ 2015 <a href="http://www.plance.nl">Plance</a>
+               </p>
+           </div>
+        </div>
         <!-- <script type='text/javascript' id='lt_ws' src='http://localhost:53069/socket.io/lighttable/ws.js'></script> -->
         <script src="http://fb.me/react-0.12.2.js"></script>
         <script src="out/goog/base.js" type="text/javascript"></script>
         <script src="memory_cljs.js" type="text/javascript"></script>
         <script type="text/javascript">goog.require("memory_cljs.core");</script>
-        <p>
-           Code op Github <a href="https://github.com/preitsma/memory-cljs">https://github.com/preitsma/memory-cljs</a>
-        </p>
-        <p>
-            Copyright @ 2015 <a href="http://www.plance.nl">Plance</a>
-        </p>
     </body>
 </html>

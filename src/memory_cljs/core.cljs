@@ -109,25 +109,18 @@
   [card owner]
   (reify
     om/IRenderState
-    (render-state [this {:keys [turnaround]}]
-           (if (false? (:found card))
-              (dom/div #js {:className "open-card"
-                            :onClick #(put! turnaround @card)
-                            :onTouchEnd #(put! turnaround @card)}
-                   (dom/span #js {:className "label" }
-                       (cond (false? (:hidden card))
-                             (:label card))))
-              (dom/div #js {:className "closed-card"}
-                   (dom/span #js {:className "label" }
-                        "gevonden"))))))
+      (render-state [this {:keys [turnaround]}]
+         (let [{found :found hidden :hidden label :label} card]
+             (if (false? found)
+                (dom/div #js {:className "open-card"
+                              :onClick #(put! turnaround @card)
+                              :onTouchEnd #(put! turnaround @card)}
+                     (dom/span #js {:className "label" }
+                         (cond (false? hidden) label)))
+                (dom/div #js {:className "closed-card"}
+                     (dom/span #js {:className "label" }
+                          "gevonden")))))))
 
-(defn test []
-   (print "aaa")
-   (print "aaa"))
-
-(test)
-
-(/ 0 2)
 
 (defn memory-board
   "om component for board"
@@ -145,9 +138,7 @@
          )))
      om/IRenderState
      (render-state [this {:keys [turnaround]}]
-        (dom/div #js {:className "board"}
-           (dom/h2 nil "Memory Board")
-           (dom/p nil "Vind de kaarten met gelijke woorden.")
+        (dom/div nil
            (dom/p nil (str "aantal beurten: "
                            (quot (:turns @board) 2)))
            (apply dom/div #js {:className "board"}

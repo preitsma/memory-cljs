@@ -1,0 +1,59 @@
+h2, h3 {
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+p {
+    line-height: 1.6em;
+}
+
+.content {
+   margin: 0 auto;
+}
+
+.memory {
+   text-align: center;
+   width: 100%
+   max-width: 980px;
+   margin: 0 auto;
+}
+
+.footer {
+   text-align: center;
+   width: 100%;
+   max-width: 980px;
+   margin: 0 auto;
+   clear: both;
+}
+
+div.board {
+  max-width: 80%;
+  height: 600px;
+  margin: 0 auto;
+}
+
+.board div {
+  width: 100px;
+  height: 100px;
+  outline: 1px dotted;
+  margin: 10px;
+  float: left;
+  text-align: center;
+  display:table;
+}
+
+.board div:hover {
+  outline: 1px solid;
+  cursor: pointer;
+}
+
+div.closed-card {
+  background-color: black;
+  outline: 1px solid;
+}
+
+span.label {
+  display:table-cell;
+  vertical-align:middle;
+}
