@@ -88,32 +88,46 @@
   "persist the toggle"
   (when  (:hidden card)
        (om/transact! app :cards
-                 (fn[cards]
-                   (-> cards
+                  #(-> %
                        handle-doubles
                       (toggle card)
-                       eliminate-equals)))
+                       eliminate-equals))
        (om/transact! app :turns inc)))
   (.log js/console (:turns @board))
 
-(defn card-view
-  "om component for cell"
-  [card owner]
-  (reify
-    om/IRenderState
-      (render-state [this {:keys [turnaround]}]
-         (let [{found :found hidden :hidden label :label} card
-                put-card #(put! turnaround @card) ]
-             (if (false? found)
-                (dom/div #js {:className "open-card"
-                              :onClick put-card
-                              :onTouchEnd put-card}
-                     (dom/span #js {:className "label" }
-                         (cond (false? hidden) label)))
-                (dom/div #js {:className "closed-card"}
-                     (dom/span #js {:className "label" }
-                          "gevonden")))))))
 
+(defmulti card-view
+   (fn [{found :found} card]
+        found))
+
+
+(defmethod card-view false
+  [card owner] (unfound-card-view card owner))
+
+(defmethod card-view true
+  [card owner] (found-card-view card owner))
+
+
+(defn unfound-card-view [card owner]
+  (reify
+     om/IRenderState
+       (render-state [this {:keys [turnaround]}]
+          (let [put-card #(put! turnaround @card)
+                {label :label
+                 hidden :hidden} card]
+             (dom/div #js {:className "open-card"
+                           :onClick put-card
+                           :onTouchEnd put-card}
+                     (dom/span #js {:className "label" }
+                         (cond (false? hidden) label)))))))
+
+(defn found-card-view [card owner]
+  (reify
+     om/IRenderState
+       (render-state [this {:keys [turnaround]}]
+             (dom/div #js {:className "closed-card"}
+                     (dom/span #js {:className "label" }
+                         "gevonden")))))
 
 
 (defn memory-board
