@@ -46,7 +46,7 @@
 (defn amount-turned
    "return amount of turned cards"
    [cards]
-   (count (turned-cards cards)))
+      (count (turned-cards cards)))
 
 
 (defn eliminate-equals
@@ -54,11 +54,12 @@
    [cards]
    (if (= (amount-turned cards) 2)
       (let [turned-cards (turned-cards cards)
-            label        ((first turned-cards) :label)]
-             (if (= label ((second turned-cards) :label))
-                    (mapv #(if (= label (:label %))
+            label1       ((first turned-cards) :label)
+            label2       ((second turned-cards) :label)]
+             (if (= label1 label2)
+                 (mapv #(if (= label1 (:label %))
                               (assoc % :found true)
-                           %)
+                         %)
                      cards)
               cards))
       cards))
@@ -101,11 +102,12 @@
   (reify
     om/IRenderState
       (render-state [this {:keys [turnaround]}]
-         (let [{found :found hidden :hidden label :label} card]
+         (let [{found :found hidden :hidden label :label} card
+                put-card #(put! turnaround @card) ]
              (if (false? found)
                 (dom/div #js {:className "open-card"
-                              :onClick #(put! turnaround @card)
-                              :onTouchEnd #(put! turnaround @card)}
+                              :onClick put-card
+                              :onTouchEnd put-card}
                      (dom/span #js {:className "label" }
                          (cond (false? hidden) label)))
                 (dom/div #js {:className "closed-card"}
