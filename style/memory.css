@@ -43,9 +43,9 @@ div.board {
   display:table;
 }
 
-.board div:hover {
+div.open-card:hover {
   outline: 1px solid;
-  cursor: pointer;
+  cursor: pointer
 }
 
 div.closed-card {

@@ -57,10 +57,9 @@
             label1       ((first turned-cards) :label)
             label2       ((second turned-cards) :label)]
              (if (= label1 label2)
-                 (mapv #(if (= label1 (:label %))
-                              (assoc % :found true)
-                         %)
-                     cards)
+                 (mapv
+                  #(if (= label1 (:label %)) (assoc % :found true) %)
+                  cards)
               cards))
       cards))
 
@@ -70,18 +69,15 @@
    [cards]
    (let [amount (amount-turned cards)]
       (if (= amount 2)
-              (map
-                 #(assoc % :hidden true)
-                  cards)
-       cards)))
+          (map #(assoc % :hidden true) cards)
+           cards)))
 
 (defn toggle
    "handle toggle of a card"
     [cards card]
-         (mapv #(if (=  % card)
-                   (assoc % :hidden false)
-                    % )
-              cards))
+         (mapv
+            #(if (= % card) (assoc % :hidden false) % )
+               cards))
 
 
 (defn toggle-card [app card]
@@ -127,7 +123,7 @@
        (render-state [this {:keys [turnaround]}]
              (dom/div #js {:className "closed-card"}
                      (dom/span #js {:className "label" }
-                         "gevonden")))))
+                         "")))))
 
 
 (defn memory-board
@@ -147,8 +143,7 @@
      om/IRenderState
      (render-state [this {:keys [turnaround]}]
         (dom/div nil
-           (dom/p nil (str "aantal beurten: "
-                           (quot (:turns @board) 2)))
+           (dom/p nil (str "aantal beurten: " (quot (:turns @board) 2)))
            (apply dom/div #js {:className "board"}
                (om/build-all card-view (:cards app)
                  {:init-state {:turnaround turnaround}}))))))
