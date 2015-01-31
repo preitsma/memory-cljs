@@ -31,11 +31,6 @@
       (create-all-cards labels))}
     {:turns "0"}))
 
-(defn add-turn
-   "add a turn"
-   [app]
-   (om/transact! app :turns inc)
-   (.log js/console "aap"))
 
 (defn log-card
    "log one card"
@@ -46,8 +41,7 @@
 (defn turned-cards
    "return all turned cards"
    [cards]
-   (vec
-      (filter #(false? (:hidden %)) cards)))
+      (filterv #(false? (:hidden %)) cards))
 
 (defn amount-turned
    "return amount of turned cards"
@@ -62,11 +56,10 @@
       (let [turned-cards (turned-cards cards)
             label        ((first turned-cards) :label)]
              (if (= label ((second turned-cards) :label))
-                 (vec
-                    (map #(if (= label (:label %))
+                    (mapv #(if (= label (:label %))
                               (assoc % :found true)
                            %)
-                     cards))
+                     cards)
               cards))
       cards))
 
@@ -76,20 +69,18 @@
    [cards]
    (let [amount (amount-turned cards)]
       (if (= amount 2)
-           (vec
               (map
                  #(assoc % :hidden true)
-                  cards))
+                  cards)
        cards)))
 
 (defn toggle
    "handle toggle of a card"
     [cards card]
-      (vec
-         (map #(if (=  % card)
+         (mapv #(if (=  % card)
                    (assoc % :hidden false)
                     % )
-              cards)))
+              cards))
 
 
 (defn toggle-card [app card]
