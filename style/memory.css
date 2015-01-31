@@ -33,6 +33,11 @@ div.board {
   margin: 0 auto;
 }
 
+div.board span {
+  display:table-cell;
+  vertical-align:middle;
+}
+
 .board div {
   width: 100px;
   height: 100px;
@@ -43,17 +48,17 @@ div.board {
   display:table;
 }
 
-div.open-card:hover {
+div.hidden-card:hover {
   outline: 1px solid;
   cursor: pointer
 }
 
-div.closed-card {
+div.shown-card {
+  outline: 2px solid;
+}
+
+div.found-card {
   background-color: black;
   outline: 1px solid;
 }
 
-span.label {
-  display:table-cell;
-  vertical-align:middle;
-}

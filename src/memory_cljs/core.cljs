@@ -48,7 +48,6 @@
    [cards]
       (count (turned-cards cards)))
 
-
 (defn eliminate-equals
    "find two turned cards with equal labels and mark as found"
    [cards]
@@ -62,7 +61,6 @@
                   cards)
               cards))
       cards))
-
 
 (defn handle-doubles
    "find two turned cards and hide them"
@@ -93,37 +91,47 @@
 
 
 (defmulti card-view
-   (fn [{found :found} card]
-        found))
+   (fn [{found :found hidden :hidden} card]
+        [found hidden]))
 
 
-(defmethod card-view false
-  [card owner] (unfound-card-view card owner))
+(defmethod card-view [false true]
+  [card owner] (hidden-card-view card owner))
 
-(defmethod card-view true
+(defmethod card-view [false false]
+  [card owner] (shown-card-view card owner))
+
+(defmethod card-view [true false]
+  [card owner] (found-card-view card owner))
+
+(defmethod card-view [true true]
   [card owner] (found-card-view card owner))
 
 
-(defn unfound-card-view [card owner]
+(defn hidden-card-view [card _]
   (reify
      om/IRenderState
        (render-state [this {:keys [turnaround]}]
-          (let [put-card #(put! turnaround @card)
-                {label :label
-                 hidden :hidden} card]
-             (dom/div #js {:className "open-card"
+          (let [put-card #(put! turnaround @card)]
+             (dom/div #js {:className "hidden-card"
                            :onClick put-card
                            :onTouchEnd put-card}
-                     (dom/span #js {:className "label" }
-                         (cond (false? hidden) label)))))))
+                     (dom/span nil ""))))))
 
-(defn found-card-view [card owner]
+(defn shown-card-view [card _]
   (reify
      om/IRenderState
        (render-state [this {:keys [turnaround]}]
-             (dom/div #js {:className "closed-card"}
-                     (dom/span #js {:className "label" }
-                         "")))))
+          (let [{label :label} card]
+             (dom/div #js {:className "shown-card"}
+                     (dom/span nil label))))))
+
+(defn found-card-view [_ _]
+  (reify
+     om/IRenderState
+       (render-state [this {:keys [turnaround]}]
+             (dom/div #js {:className "found-card"}
+                     (dom/span nil "")))))
 
 
 (defn memory-board
