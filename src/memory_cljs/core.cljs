@@ -151,12 +151,13 @@
              (dom/div #js {:className "shown-card"}
                      (dom/span nil label))))))
 
-(defn found-card-view [_ _]
+(defn found-card-view [card _]
   (reify
      om/IRenderState
        (render-state [this {:keys [turnaround]}]
+          (let [{label :label} card]
              (dom/div #js {:className "found-card"}
-                     (dom/span nil "")))))
+                     (dom/span nil label))))))
 
 
 (defn memory-board
