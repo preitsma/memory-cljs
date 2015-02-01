@@ -27,7 +27,7 @@ Open index.html with a browser.
 * Aantal kaarten kunnen instellen
 * Achtergrond plaatje tevoorschijn laten komen bij gevonden kaarten
 * Geluidjes erbij
-* Effectjes bij het kaartjes draaien
+* ~~Effectjes bij het kaartjes draaien~~
 * Zelf plaatjes kunnen instellen (vanuit Instagram)
 
 ## License
