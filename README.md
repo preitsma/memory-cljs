@@ -23,7 +23,7 @@ Open index.html with a browser.
 * ~~Aantal beurten tellen~~
 * ~~Aantal gevonden paren tellen~~
 * ~~Layout verbeteren, met afstandjes tussen de kaarten~~
-* Memory bord kunnen resetten
+* ~~Memory bord kunnen resetten~~
 * Aantal kaarten kunnen instellen
 * Achtergrond plaatje tevoorschijn laten komen bij gevonden kaarten
 * Geluidjes erbij

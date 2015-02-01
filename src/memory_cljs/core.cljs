@@ -7,7 +7,7 @@
 (enable-console-print!)
 
 (def labels
-    ["aap","noot","mies","wim","vuur","zus","jet","teun"])
+    ["aap","noot","mies","wim","vuur","zus","jet","teun","schapen"])
 
 
 (defn add-card
@@ -29,7 +29,15 @@
     {:cards
       (into []
       (create-all-cards labels))}
-    {:turns "0"}))
+    ))
+
+(defn reset-board
+   []
+   (reset! board
+      {:cards
+        (into []
+          (create-all-cards labels))
+       :turns 0}))
 
 
 (defn log-card
@@ -170,9 +178,12 @@
         (dom/div nil
            (dom/p nil (str "aantal beurten: " (quot (:turns @board) 2)))
            (dom/p nil (str "nog te vinden: " (amount-remaining-pairs (:cards @board))))
+           (dom/div nil
+             (dom/button #js {:onClick #(reset-board) } "opnieuw"))
            (apply dom/div #js {:className "board"}
                (om/build-all card-view (:cards app)
-                 {:init-state {:turnaround turnaround}}))))))
+                 {:init-state {:turnaround turnaround}}))
+         ))))
 
 (om/root memory-board board
   {:target (. js/document (getElementById "memory"))})
