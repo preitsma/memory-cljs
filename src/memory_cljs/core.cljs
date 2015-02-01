@@ -43,10 +43,27 @@
    [cards]
       (filterv #(false? (:hidden %)) cards))
 
+(defn found-cards
+   "return all found cards"
+    [cards]
+       (filterv #(true? (:found %)) cards))
+
 (defn amount-turned
    "return amount of turned cards"
    [cards]
       (count (turned-cards cards)))
+
+(defn amount-found
+   "return amount of found cards"
+   [cards]
+      (count (found-cards cards)))
+
+(defn amount-remaining-pairs
+   "return the amount of pairs that need to be found"
+   [cards]
+      (/
+        (- (count cards) (amount-found cards))
+          2))
 
 (defn eliminate-equals
    "find two turned cards with equal labels and mark as found"
@@ -60,7 +77,7 @@
                   #(if (= label1 (:label %)) (assoc % :found true) %)
                   cards)
               cards))
-      cards))
+       cards))
 
 (defn handle-doubles
    "find two turned cards and hide them"
@@ -152,6 +169,7 @@
      (render-state [this {:keys [turnaround]}]
         (dom/div nil
            (dom/p nil (str "aantal beurten: " (quot (:turns @board) 2)))
+           (dom/p nil (str "nog te vinden: " (amount-remaining-pairs (:cards @board))))
            (apply dom/div #js {:className "board"}
                (om/build-all card-view (:cards app)
                  {:init-state {:turnaround turnaround}}))))))
