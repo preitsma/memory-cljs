@@ -82,7 +82,7 @@
             label2       ((second turned-cards) :label)]
              (if (= label1 label2)
                  (mapv
-                  #(if (= label1 (:label %)) (assoc % :found true) %)
+                  #(if (= label1 (:label %)) (assoc % :found true :hidden true) %)
                   cards)
               cards))
        cards))
@@ -126,8 +126,8 @@
 (defmethod card-view [false false]
   [card owner] (shown-card-view card owner))
 
-(defmethod card-view [true false]
-  [card owner] (found-card-view card owner))
+;(defmethod card-view [true false]
+ ; [card owner] (found-card-view card owner))
 
 (defmethod card-view [true true]
   [card owner] (found-card-view card owner))
