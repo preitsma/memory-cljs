@@ -81,11 +81,21 @@
             label1       ((first turned-cards) :label)
             label2       ((second turned-cards) :label)]
              (if (= label1 label2)
-                 (mapv
-                  #(if (= label1 (:label %)) (assoc % :found true :hidden true) %)
-                  cards)
-              cards))
-       cards))
+
+                 (do
+                     (harp)
+                     (mapv
+                     #(if (= label1 (:label %)) (assoc % :found true :hidden true) %)
+                     cards)
+                  )
+              (do
+                (wrong)
+                cards
+               )))
+       (do
+         (click)
+         cards)
+        ))
 
 (defn handle-doubles
    "find two turned cards and hide them"
@@ -94,6 +104,19 @@
       (if (= amount 2)
           (map #(assoc % :hidden true) cards)
            cards)))
+
+(new js/Date)
+
+(defn click []
+(let [sound  (buzz.sound. "audio/click_low.mp3")]
+     (.play sound)))
+(defn harp []
+(let [sound  (buzz.sound. "audio/harp.mp3")]
+     (.play sound)))
+
+(defn wrong []
+(let [sound  (buzz.sound. "audio/wrong.mp3")]
+     (.play sound)))
 
 (defn toggle
    "handle toggle of a card"

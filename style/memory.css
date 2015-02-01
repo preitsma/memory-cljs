@@ -28,7 +28,7 @@ p {
 }
 
 div.board {
-  max-width: 80%;
+  max-width: 50%;
   margin: 0 auto;
 }
 
@@ -40,7 +40,7 @@ div.board span {
 .board div {
   width: 100px;
   height: 100px;
-  outline: 1px dotted;
+  outline: 1px solid #ddd;
   margin: 10px;
   float: left;
   text-align: center;
@@ -48,7 +48,7 @@ div.board span {
 }
 
 div.hidden-card:hover {
-  outline: 1px solid;
+  outline: 1px solid #000;
   cursor: pointer
 }
 
@@ -76,8 +76,8 @@ div.found-card {
 
     -webkit-animation-name: shake;
   animation-name: shake;
-  -webkit-animation-duration: 0.5s;
-          animation-duration: 0.5s;
+  -webkit-animation-duration: 1.5s;
+          animation-duration: 1.5s;
 }
 
 /* animations */

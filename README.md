@@ -24,10 +24,11 @@ Open index.html with a browser.
 * ~~Aantal gevonden paren tellen~~
 * ~~Layout verbeteren, met afstandjes tussen de kaarten~~
 * ~~Memory bord kunnen resetten~~
-* Aantal kaarten kunnen instellen
-* Achtergrond plaatje tevoorschijn laten komen bij gevonden kaarten
-* Geluidjes erbij
 * ~~Effectjes bij het kaartjes draaien~~
+* Aantal kaarten kunnen instellen
+* Gesloten kaarten achtergrondje geven
+* ~~Geluidjes erbij~~
+* Beste scores bijhouden
 * Zelf plaatjes kunnen instellen (vanuit Instagram)
 
 ## License
