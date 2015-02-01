@@ -23,10 +23,11 @@ Open index.html with a browser.
 * ~~Aantal beurten tellen~~
 * ~~Aantal gevonden paren tellen~~
 * ~~Layout verbeteren, met afstandjes tussen de kaarten~~
-* Aantal gevonden paren tellen
 * Memory bord kunnen resetten
 * Aantal kaarten kunnen instellen
 * Achtergrond plaatje tevoorschijn laten komen bij gevonden kaarten
+* Geluidjes erbij
+* Effectjes bij het kaartjes draaien
 * Zelf plaatjes kunnen instellen (vanuit Instagram)
 
 ## License
