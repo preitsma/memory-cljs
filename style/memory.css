@@ -1,3 +1,9 @@
+body {
+ background: ##eff2c1;
+ background-image: url("body-bg.png");
+}
+
+
 h2, h3 {
     letter-spacing: 0.25em;
     text-transform: uppercase;
@@ -27,9 +33,18 @@ p {
    clear: both;
 }
 
+div.header {
+   max-width: 50%;
+   margin: 0 auto;
+}
+
+.header div {
+   font-size: 80%;
+}
+
 div.board {
   max-width: 50%;
-  margin: 0 auto;
+  margin: 15px auto;
 }
 
 div.board span {
@@ -40,21 +55,31 @@ div.board span {
 .board div {
   width: 100px;
   height: 100px;
-  outline: 1px solid #ddd;
   margin: 10px;
   float: left;
   text-align: center;
   display:table;
+  border-radius: 7px;
+  -moz-user-select: none; /* These user-select properties are inheritable, used to prevent text selection */
+  -webkit-user-select: none;
+  -ms-user-select: none; /* From IE10 only */
+  user-select: none; /* Not valid CSS yet, as of July 2012 */
+
+  -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+  user-drag: none;
+}
+
+div.hidden-card {
+  background-image: url("card-bg.png");
 }
 
 div.hidden-card:hover {
-  outline: 1px solid #000;
   cursor: pointer
 }
 
 
 div.shown-card {
-  outline: 2px solid;
+  background-color: #f6f6f6;
   -webkit-animation-name: pulse;
   animation-name: pulse;
   -webkit-animation-duration: 0.5s;
@@ -70,7 +95,7 @@ div.shown-card span {
 }
 
 div.found-card {
-  outline: 2px solid;
+
   animation-fill-mode: forwards;
   -webkit-animation-fill-mode: forwards;
 
@@ -113,13 +138,19 @@ div.found-card {
 }
 
 @-webkit-keyframes shake {
+  0% {
+     background-color: #f6f6f6;
+  }
+
   0%, 100% {
     -webkit-transform: translate3d(0, 0, 0);
             transform: translate3d(0, 0, 0);
   }
 
   100% {
-      background-color: black;
+     background-color: none;
+     border: 1px solid transparent;
+     color: transparent;
   }
 
   10%, 30%, 50%, 70%, 90% {
@@ -130,22 +161,30 @@ div.found-card {
   20%, 40%, 60%, 80% {
     -webkit-transform: translate3d(5px, 0, 0);
             transform: translate3d(5px, 0, 0);
+    background-color: #f6f6f6;
   }
 }
 
 @keyframes shake {
+  0% {
+     background-color: #f6f6f6;
+  }
+
   0%, 100% {
     -webkit-transform: translate3d(0, 0, 0);
             transform: translate3d(0, 0, 0);
   }
 
   100% {
-      background-color: black;
+      background-color: none;
+      border: 1px solid transparent;
+      color: transparent;
   }
 
   10%, 30%, 50%, 70%, 90% {
     -webkit-transform: translate3d(-5px, 0, 0);
             transform: translate3d(-5px, 0, 0);
+    background-color: #f6f6f6;
   }
 
   20%, 40%, 60%, 80% {

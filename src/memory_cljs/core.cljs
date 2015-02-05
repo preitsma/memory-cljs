@@ -149,9 +149,6 @@
 (defmethod card-view [false false]
   [card owner] (shown-card-view card owner))
 
-;(defmethod card-view [true false]
- ; [card owner] (found-card-view card owner))
-
 (defmethod card-view [true true]
   [card owner] (found-card-view card owner))
 
@@ -200,14 +197,14 @@
      om/IRenderState
      (render-state [this {:keys [turnaround]}]
         (dom/div nil
-           (dom/p nil (str "aantal beurten: " (quot (:turns @board) 2)))
-           (dom/p nil (str "nog te vinden: " (amount-remaining-pairs (:cards @board))))
-           (dom/div nil
-             (dom/button #js {:onClick #(reset-board) } "opnieuw"))
-           (apply dom/div #js {:className "board"}
+           (dom/div #js {:className "header pure-g"}
+             (dom/div #js {:className "pure-u-1-3"} (str "aantal beurten: " (quot (:turns @board) 2)))
+             (dom/div #js {:className "pure-u-1-3"} (str "resterend: " (amount-remaining-pairs (:cards @board))))
+             (dom/div #js {:className "pure-u-1-3"}
+               (dom/button #js {:onClick #(reset-board) } "opnieuw")))
+             (apply dom/div #js {:className "board"}
                (om/build-all card-view (:cards app)
-                 {:init-state {:turnaround turnaround}}))
-         ))))
+                 {:init-state {:turnaround turnaround}}))))))
 
 (om/root memory-board board
   {:target (. js/document (getElementById "memory"))})

@@ -25,6 +25,7 @@ Open index.html with a browser.
 * ~~Layout verbeteren, met afstandjes tussen de kaarten~~
 * ~~Memory bord kunnen resetten~~
 * ~~Effectjes bij het kaartjes draaien~~
+* ~~Bovenkant verbeteren~~
 * Aantal kaarten kunnen instellen
 * Gesloten kaarten achtergrondje geven
 * ~~Geluidjes erbij~~
