@@ -1,10 +1,25 @@
 (ns memory-cljs.core
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [cljs.core.async :refer [put! chan <!]])
+            [clojure.string :as str]
+            [cljs.core.async :refer [put! chan <!]]
+            [clojure.browser.repl :as repl]
+            [cemerick.url :refer [url-encode]])
   (:require-macros [cljs.core.async.macros :refer [go go-loop]]))
 
+;CLIENT ID	dea1d49dd5684444a44da24d64c88206
+;CLIENT SECRET	cdb4a7da55394e66b1c12c45da42ff59
+;WEBSITE URL	http://plance.nl/memory-cljs/
+;REDIRECT URI	http://plance.nl/memory-cljs#login
+
+
+
+(repl/connect "http://localhost:9000/repl") 
+
 (enable-console-print!)
+
+
+
 
 (def labels
     ["aap","noot","mies","wim","vuur","zus","jet","teun","schapen"])
@@ -38,6 +53,17 @@
         (into []
           (create-all-cards labels))
        :turns 0}))
+
+(defn click []
+(let [sound  (buzz.sound. "audio/click_low.mp3")]
+     (.play sound)))
+(defn harp []
+(let [sound  (buzz.sound. "audio/harp.mp3")]
+     (.play sound)))
+
+(defn wrong []
+(let [sound  (buzz.sound. "audio/wrong.mp3")]
+     (.play sound)))
 
 
 (defn log-card
@@ -107,17 +133,6 @@
 
 (new js/Date)
 
-(defn click []
-(let [sound  (buzz.sound. "audio/click_low.mp3")]
-     (.play sound)))
-(defn harp []
-(let [sound  (buzz.sound. "audio/harp.mp3")]
-     (.play sound)))
-
-(defn wrong []
-(let [sound  (buzz.sound. "audio/wrong.mp3")]
-     (.play sound)))
-
 (defn toggle
    "handle toggle of a card"
     [cards card]
@@ -137,20 +152,6 @@
        (om/transact! app :turns inc)))
   (.log js/console (:turns @board))
 
-
-(defmulti card-view
-   (fn [{found :found hidden :hidden} card]
-        [found hidden]))
-
-
-(defmethod card-view [false true]
-  [card owner] (hidden-card-view card owner))
-
-(defmethod card-view [false false]
-  [card owner] (shown-card-view card owner))
-
-(defmethod card-view [true true]
-  [card owner] (found-card-view card owner))
 
 
 (defn hidden-card-view [card _]
@@ -179,6 +180,35 @@
              (dom/div #js {:className "found-card"}
                      (dom/span nil label))))))
 
+(defmulti card-view
+   (fn [{found :found hidden :hidden} card]
+        [found hidden]))
+
+
+(defmethod card-view [false true]
+  [card owner] (hidden-card-view card owner))
+
+(defmethod card-view [false false]
+  [card owner] (shown-card-view card owner))
+
+(defmethod card-view [true true]
+  [card owner] (found-card-view card owner))
+
+
+(def insta-client-id "dea1d49dd5684444a44da24d64c88206")
+(def insta-redirect-url "http://plance.nl/memory-cljs#login")
+
+(def insta-oauth-url "https://instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI&response_type=token")
+
+(defn oauth-url
+  "creates the oauth url"
+  [url client-id redirect-url]
+  (str/replace 
+      (str/replace url #"CLIENT-ID" client-id)
+      #"REDIRECT-URI"
+      (url-encode redirect-url)))
+
+(oauth-url insta-oauth-url insta-client-id insta-redirect-url)
 
 (defn memory-board
   "om component for board"
@@ -197,6 +227,8 @@
      om/IRenderState
      (render-state [this {:keys [turnaround]}]
         (dom/div nil
+           (dom/a #js {:href (oauth-url insta-oauth-url insta-client-id insta-redirect-url)}
+                (dom/p nil "Login with instagram"))
            (dom/div #js {:className "header pure-g"}
              (dom/div #js {:className "pure-u-1-3"} (str "aantal beurten: " (quot (:turns @board) 2)))
              (dom/div #js {:className "pure-u-1-3"} (str "resterend: " (amount-remaining-pairs (:cards @board))))
