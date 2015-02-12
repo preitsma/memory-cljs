@@ -5,6 +5,10 @@ pom.xml
 /out/
 /target/
 /repl/
+.repl*
+*.log
+.nrepl-port
+resources/public/js/compiled/*
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/
