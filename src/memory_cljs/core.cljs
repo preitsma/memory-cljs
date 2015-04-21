@@ -12,13 +12,9 @@
 ;WEBSITE URL	http://plance.nl/memory-cljs/
 ;REDIRECT URI	http://plance.nl/memory-cljs#login
 
-
-
 (repl/connect "http://localhost:9000/repl") 
-
+ 
 (enable-console-print!)
-
-
 
 
 (def labels
@@ -131,8 +127,6 @@
           (map #(assoc % :hidden true) cards)
            cards)))
 
-(new js/Date)
-
 (defn toggle
    "handle toggle of a card"
     [cards card]
@@ -196,7 +190,7 @@
 
 
 (def insta-client-id "dea1d49dd5684444a44da24d64c88206")
-(def insta-redirect-url "http://plance.nl/memory-cljs#login")
+(def insta-redirect-url "http://localhost:3449/index.html#login")
 
 (def insta-oauth-url "https://instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI&response_type=token")
 
@@ -208,7 +202,29 @@
       #"REDIRECT-URI"
       (url-encode redirect-url)))
 
-(oauth-url insta-oauth-url insta-client-id insta-redirect-url)
+(defn get-token
+  "retrieve the token"
+  [url]
+    (second (str/split url #"token=")))
+
+(defn login-component 
+  "renders the login link"
+  [app owner]
+    (reify
+       om/IWillMount
+         (will-mount[_]
+            (let [url (.-href (.-location js/window))]
+              (.log js/console (get-token url))
+              (om/set-state! owner :token (get-token url))
+             ))                    
+       om/IRenderState 
+         (render-state [_ _]
+           (if (om/get-state owner :token) 
+               (dom/p nil "Logged in")
+               (dom/a #js {:href (oauth-url insta-oauth-url insta-client-id insta-redirect-url)}
+                   (dom/p nil "Login in instagram"))
+               ))))
+
 
 (defn memory-board
   "om component for board"
@@ -227,8 +243,7 @@
      om/IRenderState
      (render-state [this {:keys [turnaround]}]
         (dom/div nil
-           (dom/a #js {:href (oauth-url insta-oauth-url insta-client-id insta-redirect-url)}
-                (dom/p nil "Login with instagram"))
+           (om/build login-component app)
            (dom/div #js {:className "header pure-g"}
              (dom/div #js {:className "pure-u-1-3"} (str "aantal beurten: " (quot (:turns @board) 2)))
              (dom/div #js {:className "pure-u-1-3"} (str "resterend: " (amount-remaining-pairs (:cards @board))))
