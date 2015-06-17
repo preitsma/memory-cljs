@@ -2,16 +2,17 @@
   :description "Memory Game"
   :url "http://example.com/FIXME"
 
-  :dependencies [[org.clojure/clojure "1.6.0"]
+  :dependencies [[org.clojure/clojure "1.7.0-beta2"]
                  [com.cemerick/url "0.1.1"]
-                 [figwheel "0.2.3-SNAPSHOT"]
-                 [org.clojure/clojurescript "0.0-2760" :scope "provided"]
+                 [figwheel "0.2.9"]
+                 [figwheel-sidecar "0.2.9"]
+                 [org.clojure/clojurescript "0.0-3211" :scope "provided"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [sablono "0.2.22"]
                  [org.omcljs/om "0.8.6"]]
 
   :plugins [[lein-cljsbuild "1.0.4"]
-            [lein-figwheel "0.2.3-SNAPSHOT"]]
+            [lein-figwheel "0.2.9"]]
 
   :source-paths ["src"]
 
@@ -34,6 +35,7 @@
              :http-server-root "public" ;; default and assumes "resources" 
              :server-port 3449 ;; default
              :css-dirs ["resources/public/css"] ;; watch and update CSS
+             :nrepl-port 7888
 
              ;; Server Ring Handler (optional)
              ;; if you want to embed a ring handler into the figwheel http-kit

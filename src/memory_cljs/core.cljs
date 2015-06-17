@@ -5,17 +5,16 @@
             [cljs.core.async :refer [put! chan <!]]
             [clojure.browser.repl :as repl]
             [cemerick.url :refer [url-encode]])
-  (:require-macros [cljs.core.async.macros :refer [go go-loop]]))
+  (:require-macros [cljs.core.async.macros :refer [go go-loop]])
+  (:import [goog.net Jsonp]
+           [goog Uri]))
 
 ;CLIENT ID	dea1d49dd5684444a44da24d64c88206
 ;CLIENT SECRET	cdb4a7da55394e66b1c12c45da42ff59
 ;WEBSITE URL	http://plance.nl/memory-cljs/
 ;REDIRECT URI	http://plance.nl/memory-cljs#login
 
-(repl/connect "http://localhost:9000/repl") 
- 
 (enable-console-print!)
-
 
 (def labels
     ["aap","noot","mies","wim","vuur","zus","jet","teun","schapen"])
@@ -34,25 +33,26 @@
          (shuffle
            (concat labels labels))))
 
+(defn create-board
+  []
+  {:cards
+            (into []
+                  (create-all-cards labels))
+   :turns   0
+   :session {}})
+
 (def board
-   "atom for the board"
-  (atom
-    {:cards
-      (into []
-      (create-all-cards labels))}
-    ))
+  (atom (create-board)))
 
 (defn reset-board
    []
    (reset! board
-      {:cards
-        (into []
-          (create-all-cards labels))
-       :turns 0}))
+      (create-board)))
 
 (defn click []
 (let [sound  (buzz.sound. "audio/click_low.mp3")]
      (.play sound)))
+
 (defn harp []
 (let [sound  (buzz.sound. "audio/harp.mp3")]
      (.play sound)))
@@ -103,7 +103,6 @@
             label1       ((first turned-cards) :label)
             label2       ((second turned-cards) :label)]
              (if (= label1 label2)
-
                  (do
                      (harp)
                      (mapv
@@ -145,7 +144,6 @@
                        eliminate-equals))
        (om/transact! app :turns inc)))
   (.log js/console (:turns @board))
-
 
 
 (defn hidden-card-view [card _]
@@ -194,6 +192,9 @@
 
 (def insta-oauth-url "https://instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI&response_type=token")
 
+(def userInfoUrl "https://api.instagram.com/v1/users/self/?access_token=1470197.dea1d49.1ceef045b6724643a61222e555cab153" )
+
+
 (defn oauth-url
   "creates the oauth url"
   [url client-id redirect-url]
@@ -205,25 +206,56 @@
 (defn get-token
   "retrieve the token"
   [url]
-    (second (str/split url #"token=")))
+  (second (str/split url #"token=")))
 
-(defn login-component 
+(defn jsonp [uri]
+  (let [out (chan)
+        req (Jsonp. (Uri. uri))]
+    (.send req nil (fn [res] (put! out res)))
+    out))
+
+(defn get-full-name
+  [app]
+  (go
+    (let [obj (<! (jsonp userInfoUrl))]
+      (om/transact! app :session
+        #(assoc % :full_name (-> obj .-data .-full_name)
+                  :id        (-> obj .-data .-id)
+                  :username  (-> obj .-data .-username)
+                   )))))
+
+(defn init-session
+  [app]
+  ; if :session empty
+  ; check token on url
+  ; if there fetch session
+  ; if not, do nothig
+  )
+
+(defn clear-session
+  [app]
+  (om/transact! app :session #( [] )))
+
+(defn login-component
   "renders the login link"
   [app owner]
-    (reify
-       om/IWillMount
-         (will-mount[_]
-            (let [url (.-href (.-location js/window))]
-              (.log js/console (get-token url))
-              (om/set-state! owner :token (get-token url))
-             ))                    
-       om/IRenderState 
-         (render-state [_ _]
-           (if (om/get-state owner :token) 
-               (dom/p nil "Logged in")
-               (dom/a #js {:href (oauth-url insta-oauth-url insta-client-id insta-redirect-url)}
-                   (dom/p nil "Login in instagram"))
-               ))))
+  (reify
+    om/IWillMount
+    (will-mount [_]
+      (let [url (.-href (.-location js/window))
+            token ()  ]
+        (.log js/console (get-token url))
+        (get-full-name app)
+        (om/set-state! owner :token (get-token url))
+        ))
+    om/IRenderState
+    (render-state [_ _]
+      (let [{full_name :full_name} (:session app) ]
+        (if (om/get-state owner :token)
+          (dom/p nil (str "Logged in as " full_name))
+          (dom/a #js {:href (oauth-url insta-oauth-url insta-client-id insta-redirect-url)}
+                 (dom/p nil "Login in instagram"))
+          )))))
 
 
 (defn memory-board
@@ -245,8 +277,8 @@
         (dom/div nil
            (om/build login-component app)
            (dom/div #js {:className "header pure-g"}
-             (dom/div #js {:className "pure-u-1-3"} (str "aantal beurten: " (quot (:turns @board) 2)))
-             (dom/div #js {:className "pure-u-1-3"} (str "resterend: " (amount-remaining-pairs (:cards @board))))
+             (dom/div #js {:className "pure-u-1-3"} (str "aantal beurten: " (quot (:turns app) 2)))
+             (dom/div #js {:className "pure-u-1-3"} (str "resterend: " (amount-remaining-pairs (:cards app))))
              (dom/div #js {:className "pure-u-1-3"}
                (dom/button #js {:onClick #(reset-board) } "opnieuw")))
              (apply dom/div #js {:className "board"}

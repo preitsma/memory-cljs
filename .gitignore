@@ -12,4 +12,8 @@ resources/public/js/compiled/*
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/
+.idea
+.nrepl-port
+sandbox.cljs
+*.iml
 .DS_Store
