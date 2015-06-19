@@ -4,7 +4,8 @@
             [clojure.string :as str]
             [cljs.core.async :refer [put! chan <!]]
             [clojure.browser.repl :as repl]
-            [cemerick.url :refer [url-encode]])
+            [cemerick.url :refer [url-encode]]
+            [memory-cljs.sandbox :refer [log4]])
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:import [goog.net Jsonp]
            [goog Uri]))
@@ -18,6 +19,9 @@
 
 (def labels
     ["aap","noot","mies","wim","vuur","zus","jet","teun","schapen"])
+
+(defn log [s]
+  (.log js/console s))
 
 
 (defn add-card
@@ -192,7 +196,7 @@
 
 (def insta-oauth-url "https://instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI&response_type=token")
 
-(def userInfoUrl "https://api.instagram.com/v1/users/self/?access_token=1470197.dea1d49.1ceef045b6724643a61222e555cab153" )
+(def insta-user-info-url "https://api.instagram.com/v1/users/self/?access_token=" )
 
 
 (defn oauth-url
@@ -214,48 +218,41 @@
     (.send req nil (fn [res] (put! out res)))
     out))
 
-(defn get-full-name
-  [app]
-  (go
-    (let [obj (<! (jsonp userInfoUrl))]
-      (om/transact! app :session
-        #(assoc % :full_name (-> obj .-data .-full_name)
-                  :id        (-> obj .-data .-id)
-                  :username  (-> obj .-data .-username)
-                   )))))
-
-(defn init-session
-  [app]
-  ; if :session empty
-  ; check token on url
-  ; if there fetch session
-  ; if not, do nothig
-  )
-
 (defn clear-session
-  [app]
-  (om/transact! app :session #( [] )))
+  [owner]
+  (om/set-state! owner :token nil)
+  (om/set-state! owner :id nil)
+  (aset window.location "hash" "#")
+  )
 
 (defn login-component
   "renders the login link"
   [app owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      (let [url (.-href (.-location js/window))]
+        {:token (get-token url)}
+        ))
     om/IWillMount
     (will-mount [_]
-      (let [url (.-href (.-location js/window))
-            token ()  ]
-        (.log js/console (get-token url))
-        (get-full-name app)
-        (om/set-state! owner :token (get-token url))
-        ))
+      (go
+        (let [obj (<! (jsonp (str insta-user-info-url (om/get-state owner :token))))]
+          (om/set-state! owner :fullname (-> obj .-data .-full_name))
+          (om/set-state! owner :id (-> obj .-data .-id))
+          (om/set-state! owner :username (-> obj .-data .-username))
+          ))
+     )
     om/IRenderState
-    (render-state [_ _]
-      (let [{full_name :full_name} (:session app) ]
-        (if (om/get-state owner :token)
-          (dom/p nil (str "Logged in as " full_name))
+    (render-state [_ {:keys [token fullname]}]
+        (if token
+          (dom/div nil
+             (dom/span nil (str "Logged in as " fullname " "))
+             (dom/button #js {:onClick #(clear-session owner)}
+                    (dom/span nil "logout")))
           (dom/a #js {:href (oauth-url insta-oauth-url insta-client-id insta-redirect-url)}
                  (dom/p nil "Login in instagram"))
-          )))))
+          ))))
 
 
 (defn memory-board
@@ -287,3 +284,4 @@
 
 (om/root memory-board board
   {:target (. js/document (getElementById "memory"))})
+
