@@ -5,7 +5,7 @@
             [cljs.core.async :refer [put! chan <!]]
             [clojure.browser.repl :as repl]
             [cemerick.url :refer [url-encode]]
-            [memory-cljs.sandbox :refer [log4]])
+            [memory-cljs.insta :refer [login-component]])
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:import [goog.net Jsonp]
            [goog Uri]))
@@ -17,8 +17,10 @@
 
 (enable-console-print!)
 
+(def img_base_url "/")
+
 (def labels
-    ["aap","noot","mies","wim","vuur","zus","jet","teun","schapen"])
+    ["aap","nootjes","mies","wim","vuur","zus","jet","teun","https://igcdn-photos-b-a.akamaihd.net/hphotos-ak-xap1/t51.2885-15/10311171_351287585041737_1346783369_n.jpg"])
 
 (defn log [s]
   (.log js/console s))
@@ -27,7 +29,7 @@
 (defn add-card
    "create card element based on a label"
     [v label]
-       (conj v {:id (count v) :label label :hidden true :found false}))
+       (conj v {:id (count v) :label label :hidden true :found false  }))
 
 
 (defn create-all-cards
@@ -38,10 +40,9 @@
            (concat labels labels))))
 
 (defn create-board
-  []
-  {:cards
-            (into []
-                  (create-all-cards labels))
+   "initialize app state"
+    []
+  {:cards (create-all-cards labels)
    :turns   0
    :session {}})
 
@@ -50,8 +51,9 @@
 
 (defn reset-board
    []
-   (reset! board
-      (create-board)))
+   (swap! board
+       #(assoc % :cards (create-all-cards labels)
+                 :turns 0)))
 
 (defn click []
 (let [sound  (buzz.sound. "audio/click_low.mp3")]
@@ -91,6 +93,13 @@
    "return amount of found cards"
    [cards]
       (count (found-cards cards)))
+
+(defn is-img
+   "determines if a card is an image"
+   [{label :label}]
+     (=
+       (.indexOf label "http")
+       0))
 
 (defn amount-remaining-pairs
    "return the amount of pairs that need to be found"
@@ -150,6 +159,10 @@
   (.log js/console (:turns @board))
 
 
+(def fetch-from-instafeed
+  []
+  )
+
 (defn hidden-card-view [card _]
   (reify
      om/IRenderState
@@ -165,8 +178,13 @@
      om/IRenderState
        (render-state [this {:keys [turnaround]}]
           (let [{label :label} card]
-             (dom/div #js {:className "shown-card"}
-                     (dom/span nil label))))))
+
+                (dom/div #js {:className "shown-card"}
+                         (if (is-img card)
+                           (dom/img #js {:className "shown-img"
+                                         :src       label})
+                           (dom/span nil label)))))))
+
 
 (defn found-card-view [card _]
   (reify
@@ -174,7 +192,10 @@
        (render-state [this {:keys [turnaround]}]
           (let [{label :label} card]
              (dom/div #js {:className "found-card"}
-                     (dom/span nil label))))))
+                      (if (is-img card)
+                         (dom/img #js {:className "shown-img"
+                                       :src       label})
+                         (dom/span nil label)))))))
 
 (defmulti card-view
    (fn [{found :found hidden :hidden} card]
@@ -189,71 +210,6 @@
 
 (defmethod card-view [true true]
   [card owner] (found-card-view card owner))
-
-
-(def insta-client-id "dea1d49dd5684444a44da24d64c88206")
-(def insta-redirect-url "http://localhost:3449/index.html#login")
-
-(def insta-oauth-url "https://instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI&response_type=token")
-
-(def insta-user-info-url "https://api.instagram.com/v1/users/self/?access_token=" )
-
-
-(defn oauth-url
-  "creates the oauth url"
-  [url client-id redirect-url]
-  (str/replace 
-      (str/replace url #"CLIENT-ID" client-id)
-      #"REDIRECT-URI"
-      (url-encode redirect-url)))
-
-(defn get-token
-  "retrieve the token"
-  [url]
-  (second (str/split url #"token=")))
-
-(defn jsonp [uri]
-  (let [out (chan)
-        req (Jsonp. (Uri. uri))]
-    (.send req nil (fn [res] (put! out res)))
-    out))
-
-(defn clear-session
-  [owner]
-  (om/set-state! owner :token nil)
-  (om/set-state! owner :id nil)
-  (aset window.location "hash" "#")
-  )
-
-(defn login-component
-  "renders the login link"
-  [app owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-      (let [url (.-href (.-location js/window))]
-        {:token (get-token url)}
-        ))
-    om/IWillMount
-    (will-mount [_]
-      (go
-        (let [obj (<! (jsonp (str insta-user-info-url (om/get-state owner :token))))]
-          (om/set-state! owner :fullname (-> obj .-data .-full_name))
-          (om/set-state! owner :id (-> obj .-data .-id))
-          (om/set-state! owner :username (-> obj .-data .-username))
-          ))
-     )
-    om/IRenderState
-    (render-state [_ {:keys [token fullname]}]
-        (if token
-          (dom/div nil
-             (dom/span nil (str "Logged in as " fullname " "))
-             (dom/button #js {:onClick #(clear-session owner)}
-                    (dom/span nil "logout")))
-          (dom/a #js {:href (oauth-url insta-oauth-url insta-client-id insta-redirect-url)}
-                 (dom/p nil "Login in instagram"))
-          ))))
-
 
 (defn memory-board
   "om component for board"
@@ -271,17 +227,19 @@
          )))
      om/IRenderState
      (render-state [this {:keys [turnaround]}]
-        (dom/div nil
-           (om/build login-component app)
-           (dom/div #js {:className "header pure-g"}
-             (dom/div #js {:className "pure-u-1-3"} (str "aantal beurten: " (quot (:turns app) 2)))
-             (dom/div #js {:className "pure-u-1-3"} (str "resterend: " (amount-remaining-pairs (:cards app))))
-             (dom/div #js {:className "pure-u-1-3"}
-               (dom/button #js {:onClick #(reset-board) } "opnieuw")))
-             (apply dom/div #js {:className "board"}
-               (om/build-all card-view (:cards app)
-                 {:init-state {:turnaround turnaround}}))))))
+       (dom/div nil
+            (om/build login-component app)
+                (dom/div #js {:className "header pure-g"}
+                         (dom/div #js {:className "pure-u-1-4"} (str "aantal beurten: " (quot (:turns app) 2)))
+                         (dom/div #js {:className "pure-u-1-4"} (str "resterend: " (amount-remaining-pairs (:cards app))))
+                         (dom/div #js {:className "pure-u-1-4"}
+                                  (dom/button #js {:onClick #(reset-board)} "opnieuw"))
+                         (if (:id app)
+                           (dom/div #js {:className "pure-u-1-4"}
+                                    (dom/button #js {:onClick #(fetch-from-instafeed)} "gebruik instagram plaatjes"))))
+                (apply dom/div #js {:className "board"}
+                 (om/build-all card-view (:cards app)
+                               {:init-state {:turnaround turnaround}}))))))
 
 (om/root memory-board board
   {:target (. js/document (getElementById "memory"))})
-

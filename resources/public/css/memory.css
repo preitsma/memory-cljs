@@ -64,7 +64,6 @@ div.board span {
   -webkit-user-select: none;
   -ms-user-select: none; /* From IE10 only */
   user-select: none; /* Not valid CSS yet, as of July 2012 */
-
   -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
   user-drag: none;
 }
@@ -86,20 +85,16 @@ div.shown-card {
           animation-duration: 0.5s;
 }
 
-div.shown-card span {
-  -webkit-animation-name: pulse;
-  animation-name: pulse;
-  -webkit-animation-duration: 0.5s;
-          animation-duration: 0.5s;
-
+img.shown-img {
+   width:100px;
+   height:100px;
+   border-radius: 7px;
 }
 
-div.found-card {
-
+div.found-card, div.found-card img {
   animation-fill-mode: forwards;
   -webkit-animation-fill-mode: forwards;
-
-    -webkit-animation-name: shake;
+  -webkit-animation-name: shake;
   animation-name: shake;
   -webkit-animation-duration: 1.5s;
           animation-duration: 1.5s;
@@ -140,6 +135,7 @@ div.found-card {
 @-webkit-keyframes shake {
   0% {
      background-color: #f6f6f6;
+     opacity: 1.0;
   }
 
   0%, 100% {
@@ -151,6 +147,7 @@ div.found-card {
      background-color: none;
      border: 1px solid transparent;
      color: transparent;
+     opacity: 0.0;
   }
 
   10%, 30%, 50%, 70%, 90% {
@@ -168,6 +165,7 @@ div.found-card {
 @keyframes shake {
   0% {
      background-color: #f6f6f6;
+     opacity: 1.0;
   }
 
   0%, 100% {
@@ -179,6 +177,7 @@ div.found-card {
       background-color: none;
       border: 1px solid transparent;
       color: transparent;
+      opacity: 0.0;
   }
 
   10%, 30%, 50%, 70%, 90% {
