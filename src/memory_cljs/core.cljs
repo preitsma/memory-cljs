@@ -5,7 +5,7 @@
             [cljs.core.async :refer [put! chan <!]]
             [clojure.browser.repl :as repl]
             [cemerick.url :refer [url-encode]]
-            [memory-cljs.insta :refer [login-component]])
+            [memory-cljs.insta :as insta :refer [login-component]])
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:import [goog.net Jsonp]
            [goog Uri]))
@@ -50,10 +50,25 @@
   (atom (create-board)))
 
 (defn reset-board
-   []
+   [labels]
    (swap! board
        #(assoc % :cards (create-all-cards labels)
                  :turns 0)))
+
+(defn get-thumbnail
+  "fetches thumbnail from pic map"
+  [v pic]
+  (let [{{{url :url} :thumbnail} :images} pic]
+    (conj v url)))
+
+(defn fetch-from-instafeed
+  "haal plaatjes van instagram self feed"
+  [token]
+  (go
+    (let [obj   (<! (insta/jsonp (str insta/insta-most-recent-self-url token)))
+          picas (js->clj (-> obj .-data) :keywordize-keys true) ]
+      (reset-board
+        (reduce get-thumbnail [] picas)))))
 
 (defn click []
 (let [sound  (buzz.sound. "audio/click_low.mp3")]
@@ -159,10 +174,6 @@
   (.log js/console (:turns @board))
 
 
-(def fetch-from-instafeed
-  []
-  )
-
 (defn hidden-card-view [card _]
   (reify
      om/IRenderState
@@ -178,7 +189,6 @@
      om/IRenderState
        (render-state [this {:keys [turnaround]}]
           (let [{label :label} card]
-
                 (dom/div #js {:className "shown-card"}
                          (if (is-img card)
                            (dom/img #js {:className "shown-img"
@@ -233,10 +243,10 @@
                          (dom/div #js {:className "pure-u-1-4"} (str "aantal beurten: " (quot (:turns app) 2)))
                          (dom/div #js {:className "pure-u-1-4"} (str "resterend: " (amount-remaining-pairs (:cards app))))
                          (dom/div #js {:className "pure-u-1-4"}
-                                  (dom/button #js {:onClick #(reset-board)} "opnieuw"))
+                                  (dom/button #js {:onClick #(reset-board labels)} "opnieuw"))
                          (if (:id app)
                            (dom/div #js {:className "pure-u-1-4"}
-                                    (dom/button #js {:onClick #(fetch-from-instafeed)} "gebruik instagram plaatjes"))))
+                                    (dom/button #js {:onClick #(fetch-from-instafeed (:token app))} "gebruik instagram plaatjes"))))
                 (apply dom/div #js {:className "board"}
                  (om/build-all card-view (:cards app)
                                {:init-state {:turnaround turnaround}}))))))

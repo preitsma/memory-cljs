@@ -2,7 +2,7 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [clojure.string :as str]
-            [cljs.core.async :refer [put! chan <!]]
+            [cljs.core.async :refer [put! chan <! >!]]
             [clojure.browser.repl :as repl]
             [cemerick.url :refer [url-encode]])
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
@@ -36,6 +36,8 @@
         req (Jsonp. (Uri. uri))]
     (.send req nil (fn [res] (put! out res)))
     out))
+
+
 
 (defn clear-session
   [app owner]
