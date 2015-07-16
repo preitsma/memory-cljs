@@ -10,17 +10,14 @@
   (:import [goog.net Jsonp]
            [goog Uri]))
 
-;CLIENT ID	dea1d49dd5684444a44da24d64c88206
-;CLIENT SECRET	cdb4a7da55394e66b1c12c45da42ff59
-;WEBSITE URL	http://plance.nl/memory-cljs/
-;REDIRECT URI	http://plance.nl/memory-cljs#login
-
 (enable-console-print!)
 
 (def img_base_url "/")
 
 (def labels
-    ["aap","nootjes","mies","wim","vuur","zus","jet","teun","https://igcdn-photos-b-a.akamaihd.net/hphotos-ak-xap1/t51.2885-15/10311171_351287585041737_1346783369_n.jpg"])
+    ["aap","nootjes","mies","wim","vuur","zus","jet","teun","schapen","henk","klaas","pim","arthur","sjaak","huis","bomen"])
+
+(def max-cards 14)
 
 (defn log [s]
   (.log js/console s))
@@ -35,21 +32,22 @@
 (defn create-all-cards
    "create set of cards based on the set of labels"
     [labels]
+  (let [ll (take max-cards labels)]
     (reduce add-card []
-         (shuffle
-           (concat labels labels))))
+            (shuffle
+              (concat ll ll)))))
 
 (defn create-board
    "initialize app state"
     []
   {:cards (create-all-cards labels)
-   :turns   0
-   :session {}})
+   :turns  0})
 
 (def board
   (atom (create-board)))
 
 (defn reset-board
+   "resets the board based on a vector of labels"
    [labels]
    (swap! board
        #(assoc % :cards (create-all-cards labels)

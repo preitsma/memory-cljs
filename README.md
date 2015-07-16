@@ -32,7 +32,7 @@ Open index.html with a browser.
 * Gesloten kaarten achtergrondje geven
 * ~~Geluidjes erbij~~
 * Beste scores bijhouden
-* Zelf plaatjes kunnen instellen (vanuit Instagram)
+* ~~Zelf plaatjes kunnen instellen (vanuit Instagram)~~
 
 ## License
 

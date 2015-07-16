@@ -3,20 +3,16 @@
             [om.dom :as dom :include-macros true]
             [clojure.string :as str]
             [cljs.core.async :refer [put! chan <! >!]]
-            [clojure.browser.repl :as repl]
             [cemerick.url :refer [url-encode]])
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:import [goog.net Jsonp]
            [goog Uri]))
-
-
 
 (def insta-client-id "dea1d49dd5684444a44da24d64c88206")
 (def insta-redirect-url "http://localhost:3449/index.html#login")
 (def insta-oauth-url "https://instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI&response_type=token")
 (def insta-user-info-url "https://api.instagram.com/v1/users/self/?access_token=" )
 (def insta-most-recent-self-url "https://api.instagram.com/v1/users/self/media/recent/?access_token=")
-
 
 (defn oauth-url
   "creates the oauth url"
@@ -36,8 +32,6 @@
         req (Jsonp. (Uri. uri))]
     (.send req nil (fn [res] (put! out res)))
     out))
-
-
 
 (defn clear-session
   [app owner]
