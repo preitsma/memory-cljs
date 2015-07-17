@@ -14,6 +14,22 @@
 (def insta-user-info-url "https://api.instagram.com/v1/users/self/?access_token=" )
 (def insta-most-recent-self-url "https://api.instagram.com/v1/users/self/media/recent/?access_token=")
 
+(defn parse-url [url prop]
+  (let [a (.createElement js/document "a")]
+    (aset a "href" url)
+    (aget a prop)))
+
+(defn get-insta-redirect-url
+  "get base url"
+  []
+  (let [url (.-href (.-location js/window))
+        base-url (str (parse-url url "protocol")
+                      "//"
+                      (parse-url url "host")
+                      (parse-url url "pathname"))]
+    (.log js/console base-url)
+    base-url))
+
 (defn oauth-url
   "creates the oauth url"
   [url client-id redirect-url]
@@ -25,7 +41,8 @@
 (defn get-token
   "retrieve the token"
   [url]
-  (second (str/split url #"token=")))
+  (second (str/split
+            (parse-url url "hash") #"token=")))
 
 (defn jsonp [uri]
   (let [out (chan)
@@ -69,6 +86,6 @@
                  (dom/span nil (str "Logged in as " fullname " "))
                  (dom/button #js {:onClick #(clear-session app owner)}
                              (dom/span nil "logout")))
-        (dom/a #js {:href (oauth-url insta-oauth-url insta-client-id insta-redirect-url)}
+        (dom/a #js {:href (oauth-url insta-oauth-url insta-client-id (get-insta-redirect-url))}
                (dom/p nil "Login in instagram"))
         ))))
