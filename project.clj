@@ -11,25 +11,37 @@
                  [sablono "0.2.22"]
                  [org.omcljs/om "0.8.6"]]
 
-  :plugins [[lein-cljsbuild "1.0.5"]
-            [lein-figwheel "0.2.9"]]
+  :plugins [[lein-cljsbuild "1.0.5"]]
 
   :source-paths ["src"]
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled"]
 
   :cljsbuild {
-    :builds [{:id "memory-cljs"
-              :source-paths ["src" "dev_src"]
-              :compiler {
-                :output-to "resources/public/js/compiled/memory_cljs.js"
-                :output-dir "resources/public/js/compiled/out"
-                :asset-path "js/compiled/out"
-                :main memory-cljs.dev
-                :optimizations :none
-                :cache-analysis true
-                :source-map true
-                :source-map-timestamp true}}]}
+    :builds [{:id           "dev"
+              :source-paths ["src"]
+
+              :figwheel     {:on-jsload "memory-cljs.core/on-js-reload"}
+
+              :compiler     {
+                             :output-to            "resources/public/js/compiled/memory_cljs.js"
+                             :output-dir           "resources/public/js/compiled/out"
+                             :asset-path           "js/compiled/out"
+                             :main                 memory-cljs.core
+                             :optimizations        :none
+                             :cache-analysis       true
+                             :source-map           true
+                             :source-map-timestamp true}}
+
+             {:id           "min"
+              :source-paths ["src"]
+              :compiler     {:output-to     "resources/public/js/compiled/memory_cljs.js"
+                             :output-dir    "resources/public/js/compiled/out"
+                             :asset-path    "js/compiled/out"
+                             :main          memory-cljs.core
+                             :optimizations :none
+                             :source-map           true
+                             :pretty-print  false}}]}
 
  :figwheel {
              :http-server-root "public" ;; default and assumes "resources" 

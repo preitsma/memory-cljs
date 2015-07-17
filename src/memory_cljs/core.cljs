@@ -15,7 +15,7 @@
 (def img_base_url "/")
 
 (def labels
-    ["aap","nootjes","mies","wim","vuur","zus","jet","teun","schapen","henk","klaas","pim","arthur","sjaak","huis","bomen"])
+  ["aap","nootjes","mies","wim","vuur","zus","jet","teun","schapen","henk","klaas","pim","arthur","sjaak","huis","bomen"])
 
 (def max-cards 14)
 
@@ -26,7 +26,7 @@
 (defn add-card
    "create card element based on a label"
     [v label]
-       (conj v {:id (count v) :label label :hidden true :found false  }))
+  (conj v {:id (count v) :label label :hidden true :found false  }))
 
 
 (defn create-all-cards
