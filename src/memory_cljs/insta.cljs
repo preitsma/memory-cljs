@@ -9,17 +9,18 @@
            [goog Uri]))
 
 (def insta-client-id "dea1d49dd5684444a44da24d64c88206")
-(def insta-redirect-url "http://localhost:3449/index.html#login")
 (def insta-oauth-url "https://instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI&response_type=token")
 (def insta-user-info-url "https://api.instagram.com/v1/users/self/?access_token=" )
-(def insta-most-recent-self-url "https://api.instagram.com/v1/users/self/media/recent/?access_token=")
 
 (def feed-sources [{:label "some words"
-                    :url "nil"}
+                    :url "ni"
+                    :needs-auth false}
                    {:label "my instagram feed"
-                    :url "https://api.instagram.com/v1/users/self/media/recent/?access_token="}
+                    :url "https://api.instagram.com/v1/users/self/media/recent/?access_token="
+                    :needs-auth true}
                    {:label "instagram liked by me"
-                    :url "https://api.instagram.com/v1/users/self/media/liked?access_token="}
+                    :url "https://api.instagram.com/v1/users/self/media/liked?access_token="
+                    :needs-auth true}
                   ])
 
 (defn parse-url [url prop]
@@ -64,6 +65,7 @@
   (om/set-state! owner :id nil)
   (om/update! app :token nil)
   (om/update! app :id nil)
+  (om/update! app :source "nil")
   (aset window.location "hash" "#")
   )
 

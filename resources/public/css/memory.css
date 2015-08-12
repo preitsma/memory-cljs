@@ -12,18 +12,38 @@ h2, h3 {
 
 p {
     line-height: 1.6em;
+    margin: 0;
 }
 
 .content {
    margin: 0 auto;
 }
 
-header {
+#nav-header {
+   max-width: 975px;
    width: 100%;
+   height: 70px;
+   position:relative;
+   margin: 0 auto;
+}
+
+#control-bar {
+   max-width: 975px;
+   width: 100%;
+   background: white;
+   margin: 10px;
    height: 100px;
    position:relative;
-   display:table-cell;
-   vertical-align:middle;
+   margin: 0 auto;
+}
+
+#control-header {
+   padding: 10px;
+}
+
+#control-header * {
+  float:left;
+  padding: 0 10px 0 10px;
 }
 
 #logo {
@@ -31,9 +51,29 @@ header {
 }
 
 #login {
-   height: 50px;
+   margin-top: 18px;
    display: inline-block;
    float:right;
+}
+
+#start-button {
+   height: 80%;
+   width: 120px;
+}
+
+#score-box {
+   height: 80%;
+   padding: 10px;
+}
+
+#score-box span {
+   float: left;
+   clear: left;
+   padding: 4px 0 4px 0;
+}
+
+#source-box {
+   float: right;
 }
 
 .memory {

@@ -229,6 +229,11 @@
 (defmethod card-view [true true]
   [card owner] (found-card-view card owner))
 
+(defn logged-in
+  "checks if user is logged in"
+  [board]
+  (:id board))
+
 (defn control-bar
   [app _]
   (reify
@@ -246,7 +251,10 @@
                         (apply dom/select #js {:id       "feed"
                                                :value    (:source app)
                                                :onChange #(om/update! app :source (.. % -target -value))}
-                               (map #(dom/option #js {:value (:url %)} (:label %) ) insta/feed-sources  )                                ))
+                               (map #(dom/option #js {:value    (:url %)
+                                                      :disabled (and
+                                                                  (not (logged-in app))
+                                                                  (true? (:needs-auth %)))} (:label %) ) insta/feed-sources  )                                ))
                ))
       ))
 
