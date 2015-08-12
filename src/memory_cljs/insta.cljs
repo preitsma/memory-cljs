@@ -14,6 +14,14 @@
 (def insta-user-info-url "https://api.instagram.com/v1/users/self/?access_token=" )
 (def insta-most-recent-self-url "https://api.instagram.com/v1/users/self/media/recent/?access_token=")
 
+(def feed-sources [{:label "some words"
+                    :url "nil"}
+                   {:label "my instagram feed"
+                    :url "https://api.instagram.com/v1/users/self/media/recent/?access_token="}
+                   {:label "instagram liked by me"
+                    :url "https://api.instagram.com/v1/users/self/media/liked?access_token="}
+                  ])
+
 (defn parse-url [url prop]
   (let [a (.createElement js/document "a")]
     (aset a "href" url)
