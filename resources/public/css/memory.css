@@ -101,8 +101,8 @@ div.header {
 }
 
 div.board {
-  max-width: 50%;
-  margin: 15px auto;
+  max-width: 975px;
+  margin: 20px auto;
 }
 
 div.board span {
@@ -111,8 +111,8 @@ div.board span {
 }
 
 .board div {
-  width: 100px;
-  height: 100px;
+  width: 175px;
+  height: 175px;
   margin: 10px;
   float: left;
   text-align: center;
@@ -144,8 +144,8 @@ div.shown-card {
 }
 
 img.shown-img {
-   width:100px;
-   height:100px;
+   width:175px;
+   height:175px;
    border-radius: 7px;
 }
 

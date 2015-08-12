@@ -15,7 +15,7 @@
 (def words
   ["aap", "nootjes", "mies", "wim", "vuur", "zus", "jet", "teun", "schapen", "henk", "klaas", "pim", "arthur", "sjaak", "huis", "bomen"])
 
-(def max-cards 14)
+(def max-cards 10)
 
 (defn log [s]
   (.log js/console s))
@@ -54,7 +54,7 @@
 (defn get-thumbnail
   "fetches thumbnail from pic map"
   [v pic]
-  (let [{{{url :url} :thumbnail} :images} pic]
+  (let [{{{url :url} :low_resolution} :images} pic]
     (conj v url)))
 
 (defn fetch-from-instafeed
@@ -235,6 +235,7 @@
   (:id board))
 
 (defn control-bar
+  "om component for the control bar"
   [app _]
   (reify
     om/IRenderState
@@ -254,7 +255,7 @@
                                (map #(dom/option #js {:value    (:url %)
                                                       :disabled (and
                                                                   (not (logged-in app))
-                                                                  (true? (:needs-auth %)))} (:label %) ) insta/feed-sources  )                                ))
+                                                                  (true? (:needs-auth %)))} (:label %) ) insta/feed-sources)                                ))
                ))
       ))
 
@@ -274,16 +275,15 @@
             )))
     om/IRenderState
     (render-state [this {:keys [turnaround]}]
-      (dom/div nil
-                 (apply dom/div #js {:className "board"}
-                      (om/build-all card-view (:cards app)
-                                    {:init-state {:turnaround turnaround}}))))))
+        (apply dom/div #js {:className "board"}
+             (om/build-all card-view (:cards app)
+                           {:init-state {:turnaround turnaround}})))))
 
 (om/root login-component board
          {:target (. js/document (getElementById "login"))})
 
 (om/root memory-board board
-         {:target (. js/document (getElementById "memory"))})
+         {:target (. js/document (getElementById "board"))})
 
 (om/root control-bar board
          {:target (. js/document (getElementById "control-bar"))})

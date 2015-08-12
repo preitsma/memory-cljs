@@ -21,7 +21,10 @@
                    {:label "instagram liked by me"
                     :url "https://api.instagram.com/v1/users/self/media/liked?access_token="
                     :needs-auth true}
-                  ])
+                   {:label "popular on instagram"
+                    :url "https://api.instagram.com/v1/media/popular?access_token="
+                    :needs-auth true}
+                   ])
 
 (defn parse-url [url prop]
   (let [a (.createElement js/document "a")]
